@@ -1,0 +1,58 @@
+<div>
+    <div class="mainBody" style="display: flex;justify-content: center;margin-top: 100px">
+        <el-card style="width: 500px; height: 400px">
+            <div slot="header" class="clearfix">
+                <span style="
+                            display: flex;
+                            justify-content: center;
+                            font-size: 26px;
+                            font-weight: 700;
+                            color: dodgerblue;">
+                    管理员登录
+                </span>
+            </div>
+            <table style="margin: 0 auto; border-spacing: 22px">
+                <tr>
+                    <td>用户名</td>
+                    <td>
+                        <el-input v-model="admin.adminId" placeholder="请输入用户名">
+                        </el-input>
+                    </td>
+                </tr>
+                <tr>
+                    <td>密码</td>
+                    <td>
+                        <el-input type="password" v-model="admin.password" placeholder="请输入密码" @keydown.enter.native="doLogin"></el-input>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <tr>
+                            <el-button style="width:320px;" type="primary" @click="login">登录</el-button>
+                        </tr>
+                        <tr>
+                            <el-button style="width:320px;margin-top:15" type="primary" @click="adminAdd = true">注册</el-button>
+                        </tr>
+                    </td>
+                </tr>
+            </table>
+        </el-card>
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="80px" class="demo-ruleForm" size="small">
+            <el-dialog title="注册" :append-to-body="true" :visible.sync="adminAdd" :before-close="handleClose">
+                <el-form-item label="用户名" prop="adminId">
+                    <el-input v-model="ruleForm.adminId"></el-input>
+                </el-form-item>
+                <el-form-item label="密码" prop="password">
+                    <el-input v-model="ruleForm.password" type="password"></el-input>
+                </el-form-item>
+                <el-form-item label="确认密码" prop="password">
+                    <el-input v-model="ruleForm.repeatPassword" type="password"></el-input>
+                </el-form-item>
+                <span slot="footer" class="dialog-footer" style="justify-content: center;display: flex">
+                    <el-button @click="cancel()" size="medium">取 消</el-button>
+                    <el-button @click="register()" type="primary" size="medium">注册</el-button>
+                </span>
+            </el-dialog>
+        </el-form>
+    </div>
+</div>

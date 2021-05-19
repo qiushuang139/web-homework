@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiushuang.demo.dao.ResidentDao">
+    <resultMap id="ResidentMap" type="com.qiushuang.demo.entity.Resident">
+        <id property="id" column="id"/>
+        <result property="name" column="name" />
+        <result property="sex" column="sex" />
+        <result property="age" column="age" />
+        <result property="hometown" column="hometown"/>
+        <result property="educationLevel" column="education_level"/>
+        <result property="profession" column="profession"/>
+        <result property="height" column="height"/>
+        <result property="weight" column="weight"/>
+    </resultMap>
+
+    <insert id="addResident">
+        insert
+        into resident(id,name,sex,age,hometown,education_level,profession,height,weight)
+        values(#{id},#{name},#{sex},#{age},#{hometown}
+        ,#{educationLevel},#{profession},#{height},#{weight})
+    </insert>
+    <update id="updateResident">
+         update resident
+        set name=#{name},sex=#{sex},age=#{age},
+        hometown=#{hometown},education_level=#{educationLevel},
+        profession=#{profession},height=#{height},weight=#{weight}
+        where id=#{id}
+    </update>
+    <delete id="deleteResidentById">
+         delete
+        from resident
+        where id=#{id}
+    </delete>
+
+    <select id="getMaxId" resultType="java.lang.Integer">
+        select max(id)
+        from resident
+    </select>
+    <select id="getResidentByPage" resultMap="ResidentMap">
+         select *
+        from resident
+        order by id
+        limit #{startRows,jdbcType=INTEGER},5
+    </select>
+    <select id="getResidentByPageWithCondition" resultMap="ResidentMap">
+        select *
+        from resident
+        <where>
+            <if test="name!=null">
+                and name like #{name}
+            </if>
+            <if test="sex!=null">
+                and sex=#{sex}
+            </if>
+            <if test="hometown!=null">
+                and hometown=#{hometown}
+            </if>
+        </where>
+        order by id
+        limit #{startRows,jdbcType=INTEGER},5
+    </select>
+    <select id="getResidentNumbers" resultType="java.lang.Integer">
+         select count(*)
+        from resident
+    </select>
+    <select id="getResidentNumbersWithCondition" resultType="java.lang.Integer">
+        select count(*)
+        from resident
+        <where>
+            <if test="name!=null">
+                and name like #{name}
+            </if>
+            <if test="sex!=null">
+                and sex=#{sex}
+            </if>
+            <if test="hometown!=null">
+                and hometown=#{hometown}
+            </if>
+        </where>
+    </select>
+    <select id="getResidentById" resultMap="ResidentMap">
+         select *
+        from resident
+        where id=#{id}
+    </select>
+</mapper>

@@ -1,0 +1,151 @@
+<div>
+    <!-- 顶部按钮区 -->
+    <el-form :inline="true" :model="queryCondition" class="demo-form-inline" size="mini">
+        <el-form-item label="姓名" width="100px">
+            <el-input v-model="queryCondition.name" size=""></el-input>
+        </el-form-item>
+        <el-form-item label="性别" size="mini">
+            <el-select v-model="queryCondition.sex" placeholder="请选择" size="small">
+                <el-option label="不限" value="-1"></el-option>
+                <el-option label="男" value="0"></el-option>
+                <el-option label="女" value="1"></el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="籍贯">
+            <el-select v-model="queryCondition.hometown" placeholder="请选择" size="small">
+                <el-option label="不限" value="-1"></el-option>
+                <el-option v-for="item in hometowns" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item></el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click="query()">查询</el-button>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click="addResidentPageShow = true">添加</el-button>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click="deleteResidentByIdList()">删除</el-button>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click="resetQuery()">重置</el-button>
+        </el-form-item>
+    </el-form>
+    <!--数据展示区  -->
+    <el-table :data="tableData" stripe style="width: 100%" ref="multipleTable">
+        <el-table-column type="selection" width="50"> </el-table-column>
+        <el-table-column prop="id" label="编号" width="90">
+        </el-table-column>
+        <el-table-column prop="name" label="姓名" width="140">
+        </el-table-column>
+        <el-table-column prop="sex" label="性别" width="60" :formatter="sexMapping">
+        </el-table-column>
+        <el-table-column prop="age" label="年龄" width="60">
+        </el-table-column>
+        <el-table-column prop="hometown" label="籍贯" width="60" :formatter="hometownMapping">
+        </el-table-column>
+        <el-table-column prop="educationLevel" label="教育水平" width="90" :formatter="educationLevelMapping">
+        </el-table-column>
+        <el-table-column prop="profession" label="职业" width="180" :formatter="professionMapping">
+        </el-table-column>
+        <el-table-column prop="height" label="身高(cm)" width="80">
+        </el-table-column>
+        <el-table-column prop="weight" label="体重(kg)" width="80">
+        </el-table-column>
+        <el-table-column label="操作" width="160">
+            <template slot-scope="scope">
+                <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+    <!-- 添加Resident -->
+    <el-form ref="residentInfoData" :model="residentInfoData" label-width="70px" size="medium" :rules="rules">
+        <el-dialog title="添加" :append-to-body="true" :visible.sync="addResidentPageShow" :before-close="handleClose">
+            <el-form-item label="姓    名" prop="name">
+                <el-input type="name" v-model="residentInfoData.name"></el-input>
+            </el-form-item>
+            <el-form-item label="性    别" prop="sex">
+                <el-select v-model="residentInfoData.sex" placeholder="请选择">
+                    <el-option label="男" value="false" key="false"></el-option>
+                    <el-option label="女" value="true" key="true"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="年    龄" prop="age">
+                <el-input type="age" v-model.number="residentInfoData.age"></el-input>
+            </el-form-item>
+            <el-form-item label="籍    贯" prop="hometown">
+                <el-select v-model="residentInfoData.hometown" placeholder="请选择">
+                    <el-option v-for="item in hometowns" :key="item.value" :label="item.label" :value="item.value">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="教育水平" prop="educationLevel">
+                <el-select v-model="residentInfoData.educationLevel" placeholder="请选择">
+                    <el-option v-for="item in educationLevels" :key="item.value" :label="item.label" :value="item.value">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="职    业" prop="profession">
+                <el-select v-model="residentInfoData.profession" placeholder="请选择">
+                    <el-option v-for="item in professions" :key="item.value" :label="item.label" :value="item.value">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="身    高" prop="height">
+                <el-input type="height" v-model.number="residentInfoData.height"></el-input>
+            </el-form-item>
+            <el-form-item label="体    重" prop="weight">
+                <el-input type="weight" v-model.number="residentInfoData.weight"></el-input>
+            </el-form-item>
+            <el-button @click="addResident()" type="primary" size="medium">添加</el-button>
+        </el-dialog>
+    </el-form>
+
+    <!-- 编辑Resident -->
+    <el-form ref="residentInfoData" :model="residentInfoData" label-width="70px" size="medium" :rules="rules">
+        <el-dialog title="添加" :append-to-body="true" :visible.sync="updateResidentPageShow" :before-close="handleClose">
+            <el-form-item label="姓    名" prop="name">
+                <el-input type="name" v-model="residentInfoData.name"></el-input>
+            </el-form-item>
+            <el-form-item label="性    别" prop="sex">
+                <el-select v-model="residentInfoData.sex" placeholder="residentInfoData.sex==true?女:男">
+                    <el-option label="男" value="false" key="false"></el-option>
+                    <el-option label="女" value="true" key="true"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="年    龄" prop="age">
+                <el-input type="age" v-model.number="residentInfoData.age"></el-input>
+            </el-form-item>
+            <el-form-item label="籍    贯" prop="hometown">
+                <el-select v-model="residentInfoData.hometown" placeholder="请选择">
+                    <el-option v-for="item in hometowns" :key="item.value" :label="item.label" :value="item.value">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="教育水平" prop="educationLevel">
+                <el-select v-model="residentInfoData.educationLevel" placeholder="请选择">
+                    <el-option v-for="item in educationLevels" :key="item.value" :label="item.label" :value="item.value">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="职    业" prop="profession">
+                <el-select v-model="residentInfoData.profession" placeholder="请选择">
+                    <el-option v-for="item in professions" :key="item.value" :label="item.label" :value="item.value">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="身    高" prop="height">
+                <el-input type="height" v-model.number="residentInfoData.height"></el-input>
+            </el-form-item>
+            <el-form-item label="体    重" prop="weight">
+                <el-input type="weight" v-model.number="residentInfoData.weight"></el-input>
+            </el-form-item>
+            <el-button @click="updateResident()" type="primary" size="medium">修改</el-button>
+        </el-dialog>
+    </el-form>
+
+    <el-pagination background layout="prev, pager, next" :page-size="5" :total="totalPage" :current-page.sync="currentPage" @current-change="handlePageChange">
+    </el-pagination>
+</div>
